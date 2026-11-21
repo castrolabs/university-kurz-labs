@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/VectorSearchLab/VectorSearchLab.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/VectorSearchLab.Tests/VectorSearchLab.Tests.csproj" />
+  </Folder>
+</Solution>
