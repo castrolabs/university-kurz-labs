@@ -1,0 +1,37 @@
+[
+  {
+    "Name": "get_stock",
+    "Description": "Returns units in stock for a SKU.",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "sku": {
+          "description": "The SKU, for example SKU-1",
+          "type": "string"
+        }
+      },
+      "required": [
+        "sku"
+      ]
+    }
+  },
+  {
+    "Name": "reserve",
+    "Description": "Reserves units of a SKU.",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "sku": {
+          "type": "string"
+        },
+        "quantity": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "sku",
+        "quantity"
+      ]
+    }
+  }
+]

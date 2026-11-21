@@ -1,0 +1,10 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/McpAuthLab.AuthServer/McpAuthLab.AuthServer.csproj" />
+    <Project Path="src/McpAuthLab.Server/McpAuthLab.Server.csproj" />
+    <Project Path="src/McpAuthLab.Wire/McpAuthLab.Wire.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/McpAuthLab.Tests/McpAuthLab.Tests.csproj" />
+  </Folder>
+</Solution>
