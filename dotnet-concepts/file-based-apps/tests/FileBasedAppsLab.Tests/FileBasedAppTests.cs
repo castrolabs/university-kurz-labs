@@ -3,6 +3,34 @@ using System.Text.RegularExpressions;
 
 namespace FileBasedAppsLab.Tests;
 
+// Runs only when the "dotnet" on PATH is SDK 11 or later (TODO-06 needs #:include).
+// On SDK 10 the test is reported as skipped with a clear reason instead of failing.
+public sealed class Sdk11FactAttribute : FactAttribute
+{
+    private static readonly string Version = ReadSdkVersion();
+
+    public Sdk11FactAttribute()
+    {
+        if (!int.TryParse(Version.Split('.')[0], out var major) || major < 11)
+            Skip = $"TODO-06 needs the .NET 11 SDK (dotnet on PATH reports '{Version}').";
+    }
+
+    private static string ReadSdkVersion()
+    {
+        // Run from the temp folder so no global.json of the lab changes the answer.
+        var psi = new ProcessStartInfo("dotnet", "--version")
+        {
+            WorkingDirectory = Path.GetTempPath(),
+            RedirectStandardOutput = true,
+            UseShellExecute = false,
+        };
+        using var process = Process.Start(psi)!;
+        var output = process.StandardOutput.ReadToEnd().Trim();
+        process.WaitForExit();
+        return output;
+    }
+}
+
 public sealed class FileBasedAppTests : IDisposable
 {
     private readonly string _dir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"));
@@ -56,6 +84,18 @@ public sealed class FileBasedAppTests : IDisposable
         var args = new List<string> { "run", "app.cs" };
         if (appArgs.Length > 0) { args.Add("--"); args.AddRange(appArgs); }
         return Dotnet(args.ToArray());
+    }
+
+    // Writes every file (creating subfolders) and runs app.cs.
+    private Result RunFiles(IReadOnlyDictionary<string, string> files)
+    {
+        foreach (var (path, text) in files)
+        {
+            var full = Path.Combine(_dir, path);
+            Directory.CreateDirectory(Path.GetDirectoryName(full)!);
+            File.WriteAllText(full, text);
+        }
+        return Dotnet("run", "app.cs");
     }
 
     // A fixed program (not part of the TODOs) that reports whether dynamic code is available.
@@ -135,4 +175,48 @@ public sealed class FileBasedAppTests : IDisposable
         Assert.Contains("<PublishAot>false</PublishAot>", csproj);
         Assert.DoesNotContain("#:property", File.ReadAllText(Path.Combine(_dir, "app", "app.cs")));
     }
+
+    // TODO-06 (optional): needs the .NET 11 SDK, skipped otherwise.
+    [Sdk11Fact]
+    public void ShouldSplitAnAppAcrossFilesWithIncludeAndAQuotedProperty()
+    {
+        var files = Apps.AppWithInclude();
+        Assert.Contains("app.cs", files.Keys);
+        Assert.True(files.Count >= 3, "app.cs plus at least two included files");
+
+        var result = RunFiles(files);
+
+        Assert.Equal(0, result.ExitCode);
+        Assert.Equal(new[] { "hi ana", "Contoso Tools" }, result.Output.Trim().Split('\n').Select(l => l.Trim()));
+        Assert.DoesNotContain("CA2266", result.Output); // the shebang is there
+    }
+
+    [Sdk11Fact]
+    public void ShouldFailWhenTheIncludeDirectivesAreRemoved()
+    {
+        var files = Apps.AppWithInclude().ToDictionary(
+            f => f.Key,
+            f => f.Key == "app.cs" ? DropLines(f.Value, "#:include") : f.Value);
+
+        var result = RunFiles(files);
+
+        Assert.NotEqual(0, result.ExitCode);
+        Assert.Matches(new Regex(@"error CS\d{4}"), result.Output); // the other files are not part of the build
+    }
+
+    [Sdk11Fact]
+    public void ShouldWarnAboutTheEntryPointWhenTheShebangIsRemoved()
+    {
+        var files = Apps.AppWithInclude().ToDictionary(
+            f => f.Key,
+            f => f.Key == "app.cs" ? DropLines(f.Value, "#!") : f.Value);
+
+        var result = RunFiles(files);
+
+        Assert.Equal(0, result.ExitCode); // only a warning
+        Assert.Contains("CA2266", result.Output);
+    }
+
+    private static string DropLines(string source, string prefix) =>
+        string.Join('\n', source.Split('\n').Where(l => !l.TrimStart().StartsWith(prefix)));
 }

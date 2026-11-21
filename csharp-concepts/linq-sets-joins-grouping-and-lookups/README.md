@@ -39,3 +39,4 @@ dotnet test
 
 - TODO-06 (optional): Implement `LeftJoin` again with `GroupJoin`, `SelectMany` and `DefaultIfEmpty`, the pre-.NET 10 way, and compare the code.
 - TODO-07 (optional): Replace `ToLookup` with `GroupBy(...).ToDictionary(...)` and note what happens on a missing key.
+- TODO-08 (optional): `ReconcileOrders` and `ReconcileByEmail` with the .NET 11 `FullJoin` operator: keep the unmatched rows of both sides, with the missing side as null. It needs the .NET 11 SDK: with SDK 10 the lab builds only for `net10.0` and this task does not appear.

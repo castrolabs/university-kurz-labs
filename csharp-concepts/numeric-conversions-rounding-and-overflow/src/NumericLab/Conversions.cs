@@ -46,4 +46,31 @@ public static class Conversions
         //   does not. Follow the Try pattern: no exception for the expected failure.
         throw new NotImplementedException("Not implemented yet.");
     }
+
+#if NET11_0_OR_GREATER
+    // TODO-09 (optional, needs the .NET 11 SDK): .NET 11 changed three silent results. Write the
+    //   three methods below, run the Net11ChangesTests, and compare with what the same calls
+    //   print on net10.0 (a scratch console app on the .NET 10 SDK is enough). Keep each
+    //   conversion on a value that arrives as a parameter, so the runtime does the work and
+    //   not the compiler.
+
+    public static double RoundDouble(double value, int digits)
+    {
+        // The plain Math.Round(double, int) overload: no MidpointRounding argument.
+        throw new NotImplementedException("Not implemented yet.");
+    }
+
+    public static decimal DoubleToDecimal(double value)
+    {
+        // The plain (decimal) cast of a double.
+        throw new NotImplementedException("Not implemented yet.");
+    }
+
+    public static double RoundViaExactDecimal(double value, int digits)
+    {
+        // Convert to decimal first, round the decimal, convert back. On .NET 11 this agrees with
+        // RoundDouble for every input; on .NET 10 it does not (the decimal cast keeps ~15 digits).
+        throw new NotImplementedException("Not implemented yet.");
+    }
+#endif
 }

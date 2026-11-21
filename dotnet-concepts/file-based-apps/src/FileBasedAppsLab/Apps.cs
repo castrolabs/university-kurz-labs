@@ -41,4 +41,20 @@ public static class Apps
         //   does not exist). The run must exit with a non-zero code and print a CSxxxx error.
         throw new NotImplementedException("Not implemented yet.");
     }
+
+    // TODO-06 (optional, needs the .NET 11 SDK): A program that spans several files.
+    // Return a map of relative path to file text; it must contain "app.cs", which the test runs.
+    //   - app.cs starts with the shebang line, pulls in two other files with the include
+    //     directive and sets the assembly company with a QUOTED property value:
+    //     "Contoso Tools" (the value has a space, so it needs quotes).
+    //   - one included file, greeter.cs, holds a Greeter class with a static Hi(string name)
+    //     that returns "hi " + name; the other, models/customer.cs, holds a Customer record
+    //     with a Name. Both files live next to app.cs (the second one in a subfolder).
+    //   - app.cs prints two lines: Greeter.Hi applied to the name of new Customer("ana"),
+    //     then the AssemblyCompanyAttribute value of the running assembly.
+    // On SDK 10.0.100 the include directive is rejected, which is why the test is skipped there.
+    public static IReadOnlyDictionary<string, string> AppWithInclude()
+    {
+        throw new NotImplementedException("Not implemented yet.");
+    }
 }

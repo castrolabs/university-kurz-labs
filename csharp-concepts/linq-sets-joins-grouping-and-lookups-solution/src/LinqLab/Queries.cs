@@ -36,4 +36,20 @@ public static class Queries
             .Select(g => (g.Key, g.Sum()))
             .OrderBy(t => t.Key)
             .ToList();
+
+#if NET11_0_OR_GREATER
+    // TODO-08 (optional, needs the .NET 11 SDK)
+    public static List<(string? Customer, int? OrderId)> ReconcileOrders(
+        IEnumerable<Customer> customers, IEnumerable<Order> orders) =>
+        customers
+            .FullJoin(orders, c => (int?)c.Id, o => o.CustomerId,
+                (c, o) => (c?.Name, (int?)o?.Id))
+            .ToList();
+
+    public static List<(Customer? Known, Customer? Incoming)> ReconcileByEmail(
+        IEnumerable<Customer> known, IEnumerable<Customer> incoming) =>
+        known
+            .FullJoin(incoming, c => c.Email, c => c.Email, StringComparer.OrdinalIgnoreCase)
+            .ToList();
+#endif
 }

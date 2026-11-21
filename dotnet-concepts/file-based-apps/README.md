@@ -9,7 +9,7 @@ See what the SDK does when the file has an error, and what it hides from you by 
 ## Prerequisites
 
 - C# top-level statements and raw string literals
-- .NET 10 SDK (10.0.100 or later) on your `PATH`
+- .NET 10 SDK (10.0.100 or later) on your `PATH` (the optional TODO-06 needs the .NET 11 SDK)
 
 ## Task
 
@@ -20,7 +20,7 @@ work offline are used: the lab never uses `#:package`, which would need NuGet. I
 script you would add a package with `#:package Name@Version`.
 
 The tests start the real SDK, so each of them takes a few seconds. The whole run takes
-about 5 to 60 seconds (7 CLI runs; the first run on a machine is the slowest).
+about 5 to 60 seconds (7 CLI runs, plus 3 more when TODO-06 runs on SDK 11; the first run on a machine is the slowest).
 The temporary directories are deleted when each test ends.
 
 ## Instructions
@@ -50,6 +50,12 @@ dotnet test
   `AppWithProperty` program. Open the generated `app.csproj` (set a breakpoint, or copy the
   folder out of the test) and find `PackAsTool`, `UserSecretsId` and `PublishAot`.
   Which of them did you write, and which did the SDK add?
-- TODO-06 (optional): In a scratch folder, put a class `Greeter` in `greeter.cs` and use it
-  from `app.cs`. On SDK 10.0.100 the build fails with `CS0103`, because the app is exactly
-  one file. Check whether your SDK supports `#:include` before relying on it.
+- TODO-06 (optional, needs the .NET 11 SDK): Write `AppWithInclude`, a program that spans three
+  files. It returns a map of relative path to file text, with `app.cs` as the entry point. `app.cs`
+  starts with the shebang line, pulls in `greeter.cs` (a `Greeter` class) and `models/customer.cs`
+  (a `Customer` record) with the include directive, and sets the assembly company to
+  `Contoso Tools` with a quoted `#:property` value. It prints the greeting for `ana`, then the
+  `AssemblyCompany` of the running assembly. Three tests cover it: the run itself, the build
+  failing once the include lines are removed, and the `CA2266` warning once the shebang is
+  removed. On SDK 10.0.100 the include directive is rejected, so these tests are reported as
+  skipped (the `dotnet` on your `PATH` is asked for its version); with the .NET 11 SDK they run.

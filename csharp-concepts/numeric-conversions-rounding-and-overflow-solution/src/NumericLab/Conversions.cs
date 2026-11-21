@@ -58,4 +58,14 @@ public static class Conversions
         shares[^1] += total - share * parts;
         return shares;
     }
+
+#if NET11_0_OR_GREATER
+    // TODO-09 (optional, needs the .NET 11 SDK)
+    public static double RoundDouble(double value, int digits) => Math.Round(value, digits);
+
+    public static decimal DoubleToDecimal(double value) => (decimal)value;
+
+    public static double RoundViaExactDecimal(double value, int digits) =>
+        (double)Math.Round((decimal)value, digits);
+#endif
 }

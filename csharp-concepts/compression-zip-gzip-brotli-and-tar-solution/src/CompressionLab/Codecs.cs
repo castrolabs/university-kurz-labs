@@ -44,4 +44,26 @@ public static class Codecs
         brotli.CopyTo(output);
         return output.ToArray();
     }
+
+#if NET11_0_OR_GREATER
+    // TODO-08 (optional)
+    public static byte[] ZstdCompress(byte[] data, CompressionLevel level)
+    {
+        using var output = new MemoryStream();
+        using (var zstd = new ZstandardStream(output, level, leaveOpen: true))
+        {
+            zstd.Write(data);
+        }
+        return output.ToArray();
+    }
+
+    public static byte[] ZstdDecompress(byte[] compressed)
+    {
+        using var input = new MemoryStream(compressed);
+        using var zstd = new ZstandardStream(input, CompressionMode.Decompress);
+        using var output = new MemoryStream();
+        zstd.CopyTo(output);
+        return output.ToArray();
+    }
+#endif
 }
