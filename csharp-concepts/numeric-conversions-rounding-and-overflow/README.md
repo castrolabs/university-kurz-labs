@@ -41,3 +41,4 @@ dotnet test
 - TODO-06 (optional): `NarrowChecked<TFrom, TTo>` using `TTo.CreateChecked`.
 - TODO-07 (optional): `AddSaturating`: clamp to the int range instead of throwing or wrapping.
 - TODO-08 (optional): `SplitEvenly`: split money into parts that add up to the exact total.
+- TODO-09 (optional): `RoundDouble`, `DoubleToDecimal` and `RoundViaExactDecimal`: pin the three results that .NET 11 changed silently (`Math.Round(2.675, 2)`, `Math.Round(1.15, 1)` and `(decimal)(0.1 + 0.2)`) and compare them with .NET 10. It needs the .NET 11 SDK: with SDK 10 the lab builds only for `net10.0` and this task does not appear.

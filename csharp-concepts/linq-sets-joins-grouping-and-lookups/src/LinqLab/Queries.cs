@@ -50,4 +50,27 @@ public static class Queries
         //   sorted by customer id. Remember that GroupBy is deferred: return a materialized list.
         throw new NotImplementedException("Not implemented yet.");
     }
+
+#if NET11_0_OR_GREATER
+    public static List<(string? Customer, int? OrderId)> ReconcileOrders(
+        IEnumerable<Customer> customers, IEnumerable<Order> orders)
+    {
+        // TODO-08 (optional, needs the .NET 11 SDK): One row per matched (customer, order) pair,
+        //   plus a row for every customer without orders and a row for every order without a
+        //   customer, so nothing is dropped on either side. Use the .NET 11 FullJoin operator
+        //   with a result selector; the side that has no match arrives as null. Then check
+        //   where the unmatched orders land in the output order.
+        throw new NotImplementedException("Not implemented yet.");
+    }
+
+    public static List<(Customer? Known, Customer? Incoming)> ReconcileByEmail(
+        IEnumerable<Customer> known, IEnumerable<Customer> incoming)
+    {
+        // TODO-08 (optional, part 2): The same idea with the overload that has no result
+        //   selector and returns (TOuter, TInner) tuples, matching on Email ignoring case. A
+        //   known customer that is not incoming comes out as (known, null) and a new incoming
+        //   customer as (null, incoming).
+        throw new NotImplementedException("Not implemented yet.");
+    }
+#endif
 }

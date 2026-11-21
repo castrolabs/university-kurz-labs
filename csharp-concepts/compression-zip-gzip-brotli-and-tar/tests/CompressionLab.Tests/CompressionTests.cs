@@ -257,4 +257,49 @@ public class CompressionTests : IDisposable
 
         Assert.True(tarGz.Length < data.Length / 5);
     }
+
+    // ---- TODO-08 (optional): only compiled for net11.0 (needs the .NET 11 SDK) ----
+
+#if NET11_0_OR_GREATER
+    [Fact]
+    public void ShouldRoundTripZstandardAndShrinkRepetitiveData()
+    {
+        var data = new byte[1000];
+        Array.Fill(data, (byte)'a');
+
+        var compressed = Codecs.ZstdCompress(data, CompressionLevel.Optimal);
+
+        Assert.True(compressed.Length < 100); // measured: 18 bytes for 1000 repeated bytes
+        Assert.Equal(new byte[] { 0x28, 0xB5, 0x2F, 0xFD }, compressed[..4]); // Zstandard frame magic
+        Assert.Equal(data, Codecs.ZstdDecompress(compressed));
+    }
+
+    [Fact]
+    public void ShouldRejectDataThatIsNotZstandard()
+    {
+        Assert.Throws<InvalidDataException>(() => Codecs.ZstdDecompress(Encoding.UTF8.GetBytes("plain text, not zstd")));
+    }
+
+    // A ZIP whose payload had one byte flipped. On .NET 10 the corrupted text came back
+    // silently; on .NET 11 the entry CRC32 is checked while reading.
+    [Theory]
+    [InlineData(CompressionLevel.NoCompression)]
+    [InlineData(CompressionLevel.Optimal)]
+    public void ShouldFailToReadAZipEntryWithACorruptedByte(CompressionLevel level)
+    {
+        var payload = Encoding.UTF8.GetBytes("hello hello hello hello hello");
+        var ms = new MemoryStream();
+        using (var archive = new ZipArchive(ms, ZipArchiveMode.Create, leaveOpen: true))
+        {
+            using var entry = archive.CreateEntry("a.txt", level).Open();
+            entry.Write(payload);
+        }
+        var zip = ms.ToArray();
+        // Stored data is the plain text; deflated data sits right after the 30-byte header + name.
+        var at = level == CompressionLevel.NoCompression ? zip.AsSpan().IndexOf(payload) : 30 + "a.txt".Length + 2;
+        zip[at] ^= 0x01;
+
+        Assert.Throws<InvalidDataException>(() => ZipTools.ReadZip(zip, maxTotalBytes: 1_000_000));
+    }
+#endif
 }

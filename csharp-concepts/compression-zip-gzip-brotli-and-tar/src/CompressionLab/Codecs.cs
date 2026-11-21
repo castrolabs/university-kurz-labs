@@ -15,4 +15,13 @@ public static class Codecs
     public static byte[] BrotliCompress(byte[] data, CompressionLevel level) => throw new NotImplementedException();
 
     public static byte[] BrotliDecompress(byte[] compressed) => throw new NotImplementedException();
+
+#if NET11_0_OR_GREATER
+    // TODO-08 (optional): Zstandard, new in the .NET 11 BCL. Same decorator pattern as GZipStream
+    // and BrotliStream: ZstandardStream with a CompressionLevel, leaveOpen and a dispose that
+    // finishes the frame. Data that is not Zstandard must give InvalidDataException.
+    public static byte[] ZstdCompress(byte[] data, CompressionLevel level) => throw new NotImplementedException();
+
+    public static byte[] ZstdDecompress(byte[] compressed) => throw new NotImplementedException();
+#endif
 }

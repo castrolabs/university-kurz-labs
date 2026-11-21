@@ -29,4 +29,33 @@ public static class Apps
         """
         Console.WriteLine(ThisNameDoesNotExist);
         """;
+
+    // TODO-06 (optional, needs the .NET 11 SDK)
+    public static IReadOnlyDictionary<string, string> AppWithInclude() =>
+        new Dictionary<string, string>
+        {
+            ["app.cs"] =
+                """
+                #!/usr/bin/env dotnet
+                #:include greeter.cs
+                #:include models/customer.cs
+                #:property Company="Contoso Tools"
+                using System.Reflection;
+
+                var customer = new Customer("ana");
+                Console.WriteLine(Greeter.Hi(customer.Name));
+                Console.WriteLine(Assembly.GetEntryAssembly()!.GetCustomAttribute<AssemblyCompanyAttribute>()!.Company);
+                """,
+            ["greeter.cs"] =
+                """
+                public static class Greeter
+                {
+                    public static string Hi(string name) => "hi " + name;
+                }
+                """,
+            ["models/customer.cs"] =
+                """
+                public record Customer(string Name);
+                """,
+        };
 }
