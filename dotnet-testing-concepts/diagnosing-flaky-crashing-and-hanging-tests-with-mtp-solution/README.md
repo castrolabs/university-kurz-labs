@@ -7,7 +7,7 @@ Official solution for the `diagnosing-flaky-crashing-and-hanging-tests-with-mtp`
 - **The extensions.** `tests/Dispatch.Tests/Dispatch.Tests.csproj` sets `EnableMicrosoftTestingExtensionsRetry`,
   `...HangDump`, `...CrashDump` and `...HtmlReport` to `true`. `TestingExtensionsProfile` set to
   `AllMicrosoft` also works and adds more (Azure DevOps, GitHub Actions, hot reload). The TRX report is
-  already in the `Default` profile. Every extension package is 2.5.2 with `MSTest.Sdk` 4.5.2.
+  already in the `Default` profile. Every extension package is 2.5.2 with `MSTest.Sdk` 4.5.3.
 - **`FixedTests`** has the three causes removed instead of hidden: a `[TestInitialize]` and a `[TestCleanup]`
   that call `TicketCounter.Reset()`, `Inbox.TryReceive` with a deadline, and `Route.Length(stop, limit)`.
 

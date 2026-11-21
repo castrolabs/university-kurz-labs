@@ -68,8 +68,8 @@ public sealed class QueryFilterTests : IDisposable
 
         Assert.Equal(
             [AppDbContext.SoftDeletionFilter, AppDbContext.TenantFilter],
-            blogFilters.Order().ToArray());
-        Assert.Equal([AppDbContext.SoftDeletionFilter], postFilters.ToArray());
+            blogFilters.Order());
+        Assert.Equal([AppDbContext.SoftDeletionFilter], postFilters);
     }
 
     [Fact]
